@@ -1,2 +1,2 @@
-# Cube Spin
-Makes your Cube and Mini Cube icon spin constantly.
+# fullydraco
+Spins the icon in every gamemode, plus a wave stretch/squeeze effect.
