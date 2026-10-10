@@ -7,10 +7,10 @@
 		"ios": "2.2081"
 	},
 	"version": "v1.1.0",
-	"id": "fullydraco.icon.spin",
+	"id": "fullydraco.iconspin",
 	"name": "Icon Spin",
 	"developer": "fullydraco",
-	"description": "Icon spin for ever.",
+	"description": "Icon spin for every gamemode!",
 	"settings": {
 		"spin-mode": {
 			"type": "string",
