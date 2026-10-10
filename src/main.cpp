@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/PlayerObject.hpp>
 
 using namespace geode::prelude;
 
@@ -15,12 +16,15 @@ static bool gamemodeEnabled(PlayerObject* p) {
 	return mod->getSettingValue<bool>("spin-cube");
 }
 
-static void applySpin(PlayerObject* p, float& angle, float dt, bool groundMode, float speed) {
+// On the floor = standing on a surface AND low enough to be at ground level
+static bool onFloor(PlayerObject* p, float floorHeight) {
+	return p->m_isOnGround && p->getPositionY() < floorHeight + 8.f;
+}
+
+static void applySpin(PlayerObject* p, float& angle, float dt, bool floorOnly, float floorHeight, float speed) {
 	if (!p) return;
 
-	// gamemode is turned off, or (ground mode) player is in the air:
-	// let the game rotate normally and remember the current angle
-	if (!gamemodeEnabled(p) || (groundMode && !p->m_isOnGround)) {
+	if (!gamemodeEnabled(p) || (floorOnly && !onFloor(p, floorHeight))) {
 		angle = p->getRotation();
 		return;
 	}
@@ -30,7 +34,8 @@ static void applySpin(PlayerObject* p, float& angle, float dt, bool groundMode, 
 	p->setRotation(angle);
 }
 
-class $modify(CubeSpinLayer, PlayLayer) {
+// ---- icon spin ----
+class $modify(IconSpinLayer, PlayLayer) {
 	struct Fields {
 		float angle1 = 0.f;
 		float angle2 = 0.f;
@@ -40,14 +45,35 @@ class $modify(CubeSpinLayer, PlayLayer) {
 		PlayLayer::postUpdate(dt);
 
 		auto mod = Mod::get();
-		auto mode = mod->getSettingValue<std::string>("spin-mode");
-		if (mode == "Off") return;
+		if (!mod->getSettingValue<bool>("enable-spin")) return;
 
 		float speed = static_cast<float>(mod->getSettingValue<double>("spin-speed"));
-		bool groundMode = (mode == "Ground");
+		bool floorOnly = mod->getSettingValue<bool>("spin-floor-only");
+		float floorHeight = static_cast<float>(mod->getSettingValue<double>("floor-height"));
 
 		auto fields = m_fields.self();
-		applySpin(m_player1, fields->angle1, dt, groundMode, speed);
-		applySpin(m_player2, fields->angle2, dt, groundMode, speed);
+		applySpin(m_player1, fields->angle1, dt, floorOnly, floorHeight, speed);
+		applySpin(m_player2, fields->angle2, dt, floorOnly, floorHeight, speed);
+	}
+};
+
+// ---- wave stretch / squeeze (old TPS bug imitation) ----
+class $modify(WaveEffectPlayer, PlayerObject) {
+	void update(float dt) {
+		float oldY = this->getPositionY();
+		PlayerObject::update(dt);
+
+		auto mod = Mod::get();
+		if (!mod->getSettingValue<bool>("wave-effect")) return;
+		if (!m_isDart) return;
+
+		if (mod->getSettingValue<bool>("wave-practice-only")) {
+			auto pl = PlayLayer::get();
+			if (!pl || !pl->m_isPracticeMode) return;
+		}
+
+		float scale = static_cast<float>(mod->getSettingValue<double>("wave-y-scale"));
+		float newY = this->getPositionY();
+		this->setPositionY(oldY + (newY - oldY) * scale);
 	}
 };
