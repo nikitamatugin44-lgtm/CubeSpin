@@ -6,11 +6,11 @@
 		"mac": "2.2081",
 		"ios": "2.2081"
 	},
-	"version": "v1.3.0",
+	"version": "v1.4.0",
 	"id": "fullydraco.iconspin",
 	"name": "Icon Spin",
 	"developer": "fullydraco",
-	"description": "Icon spin for every gamemode, floor-only spin option, wave stretch/squeeze effect, per-gamemode toggles.",
+	"description": "Icon spin for every gamemode, with a floor-only spin option and per-gamemode toggles.",
 	"settings": {
 		"enable-spin": {
 			"type": "bool",
@@ -39,30 +39,6 @@
 			"default": 105,
 			"min": 0,
 			"max": 500
-		},
-		"wave-title": {
-			"type": "title",
-			"name": "Wave TPS-bug effect"
-		},
-		"wave-effect": {
-			"type": "bool",
-			"name": "Enable Wave Effect",
-			"description": "Changes the wave's vertical movement to imitate the old high-TPS bug.",
-			"default": false
-		},
-		"wave-y-scale": {
-			"type": "float",
-			"name": "Wave Vertical Scale",
-			"description": "Below 1 = stretched, flat wave. Above 1 = squeezed, steep wave (looks mini). 1 = normal.",
-			"default": 0.5,
-			"min": 0.1,
-			"max": 3
-		},
-		"wave-practice-only": {
-			"type": "bool",
-			"name": "Only in practice mode",
-			"description": "The effect changes real movement, so keep it to practice mode.",
-			"default": true
 		},
 		"gamemodes-title": {
 			"type": "title",
