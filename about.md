@@ -1,2 +1,2 @@
-# Icon Spin
-Spins the icon in every gamemode, plus a wave stretch/squeeze effect.
+# <cg>Icon Spin</c>
+Spins the icon in every gamemode.
