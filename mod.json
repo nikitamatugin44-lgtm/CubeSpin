@@ -6,18 +6,17 @@
 		"mac": "2.2081",
 		"ios": "2.2081"
 	},
-	"version": "v1.1.0",
+	"version": "v1.3.0",
 	"id": "fullydraco.iconspin",
 	"name": "Icon Spin",
 	"developer": "fullydraco",
-	"description": "Icon spin for every gamemode!",
+	"description": "Icon spin for every gamemode, floor-only spin option, wave stretch/squeeze effect, per-gamemode toggles.",
 	"settings": {
-		"spin-mode": {
-			"type": "string",
-			"name": "Spin Mode",
-			"description": "Off = no spin. Constant = always spinning. Ground = keeps spinning while on the ground (2.1 style).",
-			"default": "Constant",
-			"one-of": ["Off", "Constant", "Ground"]
+		"enable-spin": {
+			"type": "bool",
+			"name": "Enable Spin",
+			"description": "Turn the icon spin on or off.",
+			"default": true
 		},
 		"spin-speed": {
 			"type": "float",
@@ -26,6 +25,44 @@
 			"default": 100,
 			"min": -2000,
 			"max": 2000
+		},
+		"spin-floor-only": {
+			"type": "bool",
+			"name": "Spin only on floor (like old tps physics)",
+			"description": "Spins only while standing on the floor. On blocks and in the air the game rotates normally.",
+			"default": false
+		},
+		"floor-height": {
+			"type": "float",
+			"name": "Floor Height (advanced)",
+			"description": "Height of the cube's center when standing on the floor. Raise it if the cube does not spin on the floor, lower it if it spins on low blocks.",
+			"default": 105,
+			"min": 0,
+			"max": 500
+		},
+		"wave-title": {
+			"type": "title",
+			"name": "Wave TPS-bug effect"
+		},
+		"wave-effect": {
+			"type": "bool",
+			"name": "Enable Wave Effect",
+			"description": "Changes the wave's vertical movement to imitate the old high-TPS bug.",
+			"default": false
+		},
+		"wave-y-scale": {
+			"type": "float",
+			"name": "Wave Vertical Scale",
+			"description": "Below 1 = stretched, flat wave. Above 1 = squeezed, steep wave (looks mini). 1 = normal.",
+			"default": 0.5,
+			"min": 0.1,
+			"max": 3
+		},
+		"wave-practice-only": {
+			"type": "bool",
+			"name": "Only in practice mode",
+			"description": "The effect changes real movement, so keep it to practice mode.",
+			"default": true
 		},
 		"gamemodes-title": {
 			"type": "title",
