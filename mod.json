@@ -7,10 +7,10 @@
 		"ios": "2.2081"
 	},
 	"version": "v1.1.0",
-	"id": "yourname.cubespin",
-	"name": "Cube Spin",
-	"developer": "YourName",
-	"description": "Makes the icon spin visually: constant spin or ground spin, with per-gamemode toggles.",
+	"id": "fullydraco.icon.spin",
+	"name": "Icon Spin",
+	"developer": "fullydraco",
+	"description": "Makes the icon spin visually.",
 	"settings": {
 		"spin-mode": {
 			"type": "string",
