@@ -1,0 +1,30 @@
+{
+	"geode": "5.11.1",
+	"gd": {
+		"win": "2.2081",
+		"android": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081"
+	},
+	"version": "v1.0.0",
+	"id": "yourname.cubespin",
+	"name": "Cube Spin",
+	"developer": "YourName",
+	"description": "Makes the Cube and Mini Cube icon constantly spin visually.",
+	"settings": {
+		"enable-spin": {
+			"type": "bool",
+			"name": "Enable Spin",
+			"description": "Turn the constant cube spin on or off.",
+			"default": true
+		},
+		"spin-speed": {
+			"type": "float",
+			"name": "Spin Speed",
+			"description": "Rotation speed in degrees per second. Negative values spin the other way.",
+			"default": 100,
+			"min": -2000,
+			"max": 2000
+		}
+	}
+}
