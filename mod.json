@@ -6,17 +6,18 @@
 		"mac": "2.2081",
 		"ios": "2.2081"
 	},
-	"version": "v1.0.0",
+	"version": "v1.1.0",
 	"id": "yourname.cubespin",
 	"name": "Cube Spin",
 	"developer": "YourName",
-	"description": "Makes the Cube and Mini Cube icon constantly spin visually.",
+	"description": "Makes the icon spin visually: constant spin or ground spin, with per-gamemode toggles.",
 	"settings": {
-		"enable-spin": {
-			"type": "bool",
-			"name": "Enable Spin",
-			"description": "Turn the constant cube spin on or off.",
-			"default": true
+		"spin-mode": {
+			"type": "string",
+			"name": "Spin Mode",
+			"description": "Off = no spin. Constant = always spinning. Ground = keeps spinning while on the ground (2.1 style).",
+			"default": "Constant",
+			"one-of": ["Off", "Constant", "Ground"]
 		},
 		"spin-speed": {
 			"type": "float",
@@ -25,6 +26,58 @@
 			"default": 100,
 			"min": -2000,
 			"max": 2000
+		},
+		"gamemodes-title": {
+			"type": "title",
+			"name": "Gamemodes"
+		},
+		"spin-cube": {
+			"type": "bool",
+			"name": "Cube",
+			"description": "Spin the cube (including mini cube).",
+			"default": true
+		},
+		"spin-ship": {
+			"type": "bool",
+			"name": "Ship",
+			"description": "Spin the ship.",
+			"default": false
+		},
+		"spin-ufo": {
+			"type": "bool",
+			"name": "UFO",
+			"description": "Spin the UFO.",
+			"default": false
+		},
+		"spin-ball": {
+			"type": "bool",
+			"name": "Ball",
+			"description": "Spin the ball.",
+			"default": false
+		},
+		"spin-wave": {
+			"type": "bool",
+			"name": "Wave",
+			"description": "Spin the wave.",
+			"default": false
+		},
+		"spin-robot": {
+			"type": "bool",
+			"name": "Robot",
+			"description": "Spin the robot.",
+			"default": false
+		},
+		"spin-spider": {
+			"type": "bool",
+			"name": "Spider",
+			"description": "Spin the spider.",
+			"default": false
+		},
+		"spin-swing": {
+			"type": "bool",
+			"name": "Swing",
+			"description": "Spin the swing.",
+			"default": false
 		}
 	}
 }
