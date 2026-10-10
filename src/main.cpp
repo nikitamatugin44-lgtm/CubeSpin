@@ -1,6 +1,5 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
-#include <Geode/modify/PlayerObject.hpp>
 
 using namespace geode::prelude;
 
@@ -34,7 +33,6 @@ static void applySpin(PlayerObject* p, float& angle, float dt, bool floorOnly, f
 	p->setRotation(angle);
 }
 
-// ---- icon spin ----
 class $modify(IconSpinLayer, PlayLayer) {
 	struct Fields {
 		float angle1 = 0.f;
@@ -54,26 +52,5 @@ class $modify(IconSpinLayer, PlayLayer) {
 		auto fields = m_fields.self();
 		applySpin(m_player1, fields->angle1, dt, floorOnly, floorHeight, speed);
 		applySpin(m_player2, fields->angle2, dt, floorOnly, floorHeight, speed);
-	}
-};
-
-// ---- wave stretch / squeeze (old TPS bug imitation) ----
-class $modify(WaveEffectPlayer, PlayerObject) {
-	void update(float dt) {
-		float oldY = this->getPositionY();
-		PlayerObject::update(dt);
-
-		auto mod = Mod::get();
-		if (!mod->getSettingValue<bool>("wave-effect")) return;
-		if (!m_isDart) return;
-
-		if (mod->getSettingValue<bool>("wave-practice-only")) {
-			auto pl = PlayLayer::get();
-			if (!pl || !pl->m_isPracticeMode) return;
-		}
-
-		float scale = static_cast<float>(mod->getSettingValue<double>("wave-y-scale"));
-		float newY = this->getPositionY();
-		this->setPositionY(oldY + (newY - oldY) * scale);
 	}
 };
