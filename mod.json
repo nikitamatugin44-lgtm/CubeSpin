@@ -10,7 +10,7 @@
 	"id": "fullydraco.icon.spin",
 	"name": "Icon Spin",
 	"developer": "fullydraco",
-	"description": "Makes the icon spin visually.",
+	"description": "Icon spin for ever.",
 	"settings": {
 		"spin-mode": {
 			"type": "string",
