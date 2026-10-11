@@ -22,7 +22,7 @@
 			"type": "float",
 			"name": "Spin Speed",
 			"description": "Rotation speed in degrees per second. Negative values spin the other way.",
-			"default": 100,
+			"default": 300,
 			"min": -2000,
 			"max": 2000
 		},
