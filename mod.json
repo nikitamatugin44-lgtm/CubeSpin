@@ -1,96 +1,20 @@
+
 {
-	"geode": "5.11.1",
-	"gd": {
-		"win": "2.2081",
-		"android": "2.2081",
-		"mac": "2.2081",
-		"ios": "2.2081"
-	},
-	"version": "v1.4.0",
-	"id": "fullydraco.iconspin",
-	"name": "Icon Spin",
-	"developer": "fullydraco",
-	"description": "Icon spin for every gamemode, with a floor-only spin option and per-gamemode toggles.",
-	"settings": {
-		"enable-spin": {
-			"type": "bool",
-			"name": "Enable Spin",
-			"description": "Turn the icon spin on or off.",
-			"default": true
-		},
-		"spin-speed": {
-			"type": "float",
-			"name": "Spin Speed",
-			"description": "Rotation speed in degrees per second. Negative values spin the other way.",
-			"default": 300,
-			"min": -2000,
-			"max": 2000
-		},
-		"spin-floor-only": {
-			"type": "bool",
-			"name": "Spin only on floor (like old tps physics)",
-			"description": "Spins only while standing on the floor. On blocks and in the air the game rotates normally.",
-			"default": false
-		},
-		"floor-height": {
-			"type": "float",
-			"name": "Floor Height (advanced)",
-			"description": "Height of the cube's center when standing on the floor. Raise it if the cube does not spin on the floor, lower it if it spins on low blocks.",
-			"default": 105,
-			"min": 0,
-			"max": 500
-		},
-		"gamemodes-title": {
-			"type": "title",
-			"name": "Gamemodes"
-		},
-		"spin-cube": {
-			"type": "bool",
-			"name": "Cube",
-			"description": "Spin the cube (including mini cube).",
-			"default": true
-		},
-		"spin-ship": {
-			"type": "bool",
-			"name": "Ship",
-			"description": "Spin the ship.",
-			"default": false
-		},
-		"spin-ufo": {
-			"type": "bool",
-			"name": "UFO",
-			"description": "Spin the UFO.",
-			"default": false
-		},
-		"spin-ball": {
-			"type": "bool",
-			"name": "Ball",
-			"description": "Spin the ball.",
-			"default": false
-		},
-		"spin-wave": {
-			"type": "bool",
-			"name": "Wave",
-			"description": "Spin the wave.",
-			"default": false
-		},
-		"spin-robot": {
-			"type": "bool",
-			"name": "Robot",
-			"description": "Spin the robot.",
-			"default": false
-		},
-		"spin-spider": {
-			"type": "bool",
-			"name": "Spider",
-			"description": "Spin the spider.",
-			"default": false
-		},
-		"spin-swing": {
-			"type": "bool",
-			"name": "Swing",
-			"description": "Spin the swing.",
-			"default": false
-		}
-	}
+    "geode": "v5.11.1",
+    "gd": {
+        "win": "2.2081",
+        "mac": "2.2081",
+        "android": "2.2081",
+        "ios": "2.2081"
+    },
+    "id": "fullydraco.physicsdebugger",
+    "name": "Physics Debugger",
+    "version": "v1.0.0",
+    "developer": "fullydraco",
+    "description": "Displays live game, player and update diagnostics during gameplay.",
+    "tags": [
+        "developer",
+        "utility",
+        "offline"
+    ]
 }
