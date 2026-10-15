@@ -11,10 +11,5 @@
     "name": "Physics Debugger",
     "version": "v1.0.0",
     "developer": "fullydraco",
-    "description": "Displays live game, player and update diagnostics during gameplay.",
-    "tags": [
-        "developer",
-        "utility",
-        "offline"
-    ]
+    "description": "Live Geometry Dash gameplay and timing diagnostics."
 }
