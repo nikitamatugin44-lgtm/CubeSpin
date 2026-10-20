@@ -1,15 +1,32 @@
-
 {
-    "geode": "v5.11.1",
-    "gd": {
-        "win": "2.2081",
-        "mac": "2.2081",
-        "android": "2.2081",
-        "ios": "2.2081"
-    },
-    "id": "fullydraco.physicsdebugger",
-    "name": "Physics Debugger",
-    "version": "v1.0.0",
-    "developer": "fullydraco",
-    "description": "Live Geometry Dash gameplay and timing diagnostics."
+	"geode": "5.11.2",
+	"gd": {
+		"win": "2.2081"
+	},
+	"version": "v1.0.0",
+	"id": "ai.predictivebuffer",
+	"name": "Predictive Input Buffer",
+	"developer": "lilWC",
+	"description": "Trajectory-based 1-2 frame press and wave release input buffer.",
+	"settings": {
+		"stage": {
+			"name": "Buffer Stage",
+			"description": "How many ticks the buffer may delay an input (All modes / Wave). F6 in a level also cycles stages.",
+			"type": "string",
+			"default": "2 / 2",
+			"one-of": [
+				"2 / 2",
+				"4 / 4",
+				"8 / 8",
+				"16 / 8",
+				"Off"
+			]
+		},
+		"debug-log": {
+			"name": "Debug log",
+			"description": "Write buffer events to the Geode log. Keep off for best performance.",
+			"type": "bool",
+			"default": false
+		}
+	}
 }
