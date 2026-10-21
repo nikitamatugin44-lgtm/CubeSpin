@@ -6,7 +6,9 @@
 #include <Geode/modify/GameObject.hpp>
 #include <Geode/modify/EffectGameObject.hpp>
 #include <Geode/modify/HardStreak.hpp>
+#include <Geode/ui/Notification.hpp>
 #include <algorithm>
+#include <cmath>
 #include <string>
 
 #include <Windows.h>
@@ -57,8 +59,12 @@ private:
     // F6 Cycle State (Starts on Stage 0: 2 ticks Normal / 2 ticks Wave)
     int  m_presetIndex = 0;
     bool m_enabled = true;
-    int  m_maxTicksNormal = 2;
-    int  m_maxTicksWave = 2;
+    double m_msAll = 8.0;           // max delay (ms) for cube/ball/ufo/etc
+    double m_msWave = 8.0;          // max delay (ms) for wave
+    bool m_releaseAfterTakeoff = true;
+    bool m_showNotify = true;
+    int  m_pollCounter = 0;
+    bool m_f6WasDown = false;
     std::string m_lastStageSetting;
 
     // Buffer state
@@ -124,6 +130,8 @@ public:
         m_physicalHolding = false;
         m_gameHolding = false;
         m_ignorePhysicalHold = false;
+        m_pollCounter = 0;
+        m_lastStageSetting.clear();
         m_simulating = false;
         m_firingBuffered = false;
         m_ticksSinceLastInput = 999;
@@ -146,64 +154,71 @@ public:
         m_rapidInputStreak = 0;
     }
 
-    // Stages:
-    // 0: 2 All / 2 Wave -> 1: 4 All / 4 Wave -> 2: 8 All / 8 Wave -> 3: 16 All / 8 Wave -> 4: OFF
-    void applyPreset(int idx) {
+    // Converts milliseconds to physics ticks using the CURRENT tick rate (dt is 1.0 per 60fps frame).
+    // Resolution is one tick (~4.2 ms at 240 TPS); higher TPS = finer steps.
+    int msToTicks(double ms) const {
+        if (ms <= 0.0) return 0;
+        double msPerTick = (1000.0 / 60.0) * getValidDt();
+        int t = (int)std::lround(ms / msPerTick);
+        return std::clamp(t, 0, 96);
+    }
+
+    void notify(const std::string& text) {
+        if (!m_showNotify) return;
+        Notification::create(text, NotificationIcon::None, 0.6f)->show();
+    }
+
+    // Stages (each one reads its ms values from the mod settings):
+    // 0..3 = Stage 1..4, 4 = OFF
+    // (legacy comment) 0: 2 All / 2 Wave -> 1: 4 All / 4 Wave -> 2: 8 All / 8 Wave -> 3: 16 All / 8 Wave -> 4: OFF
+    void loadStageValues() {
+        if (m_presetIndex >= 4) return;
+        auto base = fmt::format("stage{}", m_presetIndex + 1);
+        m_msAll = Mod::get()->getSettingValue<double>(base + "-all-ms");
+        m_msWave = Mod::get()->getSettingValue<double>(base + "-wave-ms");
+    }
+
+    void applyPreset(int idx, bool showToast = false) {
         m_presetIndex = ((idx % 5) + 5) % 5;
         m_waitTicks = -1;
         m_queuedOpposite = false;
 
-        switch (m_presetIndex) {
-            case 0:
-                m_enabled = true;
-                m_maxTicksNormal = 2;
-                m_maxTicksWave = 2;
-                IB_LOG("[InputBuffer] STAGE 1: 2 Ticks All | 2 Ticks Wave");
-                break;
-            case 1:
-                m_enabled = true;
-                m_maxTicksNormal = 4;
-                m_maxTicksWave = 4;
-                IB_LOG("[InputBuffer] STAGE 2: 4 Ticks All | 4 Ticks Wave");
-                break;
-            case 2:
-                m_enabled = true;
-                m_maxTicksNormal = 8;
-                m_maxTicksWave = 8;
-                IB_LOG("[InputBuffer] STAGE 3: 8 Ticks All | 8 Ticks Wave");
-                break;
-            case 3:
-                m_enabled = true;
-                m_maxTicksNormal = 16;
-                m_maxTicksWave = 8;
-                IB_LOG("[InputBuffer] STAGE 4: 16 Ticks All | 8 Ticks Wave");
-                break;
-            case 4:
-                m_enabled = false;
-                m_maxTicksNormal = 0;
-                m_maxTicksWave = 0;
-                m_gameHolding = m_physicalHolding;
-                IB_LOG("[InputBuffer] STAGE 5: OFF (100% Raw Input)");
-                break;
+        if (m_presetIndex == 4) {
+            m_enabled = false;
+            m_gameHolding = m_physicalHolding;
+            IB_LOG("[InputBuffer] OFF (100% raw input)");
+            if (showToast) notify("Predictive Buffer: OFF");
+        } else {
+            m_enabled = true;
+            loadStageValues();
+            IB_LOG("[InputBuffer] STAGE {}: all {} ms | wave {} ms", m_presetIndex + 1, m_msAll, m_msWave);
+            if (showToast) {
+                notify(fmt::format("Buffer stage {}: {:.0f} ms (wave {:.0f} ms)", m_presetIndex + 1, m_msAll, m_msWave));
+            }
         }
     }
 
-    void cyclePreset() { applyPreset(m_presetIndex + 1); }
+    void cyclePreset() { applyPreset(m_presetIndex + 1, true); }
 
-    // Syncs the stage with the mod setting (used on mobile, and on PC too).
-    // Only reacts when the setting value actually changed.
-    void pollStageSetting() {
-        s_logEnabled = Mod::get()->getSettingValue<bool>("debug-log");
-        std::string value = Mod::get()->getSettingValue<std::string>("stage");
-        if (value == m_lastStageSetting) return;
-        m_lastStageSetting = value;
-        int idx = 0;
-        if (value.rfind("2", 0) == 0) idx = 0;
-        else if (value.rfind("4", 0) == 0) idx = 1;
-        else if (value.rfind("8", 0) == 0) idx = 2;
-        else if (value.rfind("16", 0) == 0) idx = 3;
-        else if (value.rfind("Off", 0) == 0) idx = 4;
-        applyPreset(idx);
+    // Re-reads the mod settings. Called every ~30 ticks (cheap) so changes apply live.
+    void pollSettings() {
+        auto* mod = Mod::get();
+        s_logEnabled = mod->getSettingValue<bool>("debug-log");
+        m_showNotify = mod->getSettingValue<bool>("show-notifications");
+        m_releaseAfterTakeoff = mod->getSettingValue<bool>("assume-release-after-takeoff");
+
+        std::string value = mod->getSettingValue<std::string>("stage");
+        if (value != m_lastStageSetting) {
+            m_lastStageSetting = value;
+            int idx = 0;
+            if (value == "Stage 2") idx = 1;
+            else if (value == "Stage 3") idx = 2;
+            else if (value == "Stage 4") idx = 3;
+            else if (value == "Off") idx = 4;
+            applyPreset(idx);
+        } else {
+            loadStageValues(); // picks up edited ms values of the current stage
+        }
     }
 
     bool isSimulating() const { return m_simulating; }
@@ -265,7 +280,21 @@ public:
         int airborneTicks = 0;
         int safeLandedTicks = 0;
 
+        // A normal cube/ball jump is a TAP, not a hold-for-the-whole-horizon. If the sim keeps
+        // the button held, the cube re-jumps on every landing and "dies" on unrelated spikes later,
+        // so the mod never finds a safe delay. Release once the sim player has taken off.
+        bool modelTap = m_releaseAfterTakeoff && actionPush && !isContinuousMode &&
+                        !realP1->m_isRobot && !(isDual && realP2 && realP2->m_isRobot);
+        bool tapReleased = false;
+
         for (int i = 0; i < delayFrames + maxTicks; i++) {
+            if (modelTap && !tapReleased && i > delayFrames && !m_simPlayer1->m_isOnGround) {
+                m_simPlayer1->releaseButton(PlayerButton::Jump);
+                if (isDual && m_simPlayer2) {
+                    m_simPlayer2->releaseButton(PlayerButton::Jump);
+                }
+                tapReleased = true;
+            }
             if (i == delayFrames) {
                 if (actionPush) {
                     m_simPlayer1->pushButton(PlayerButton::Jump);
@@ -417,7 +446,11 @@ public:
         // Full Show-Trajectory lookahead for Wave (65 ticks / 50 ticks Mini Wave)
         // so it sees spikes and sawblades 1-3 blocks ahead along the diagonal path!
         int targetHorizon = isMiniWave ? 50 : (isWave ? 65 : 160);
-        int maxDelayFrames = isWave ? m_maxTicksWave : m_maxTicksNormal;
+        int maxDelayFrames = msToTicks(isWave ? m_msWave : m_msAll);
+        if (maxDelayFrames <= 0) {
+            m_gameHolding = push;
+            return true;
+        }
 
         // 4. Check Frame 0 (immediate input) across the full trajectory horizon
         int ticksFrame0 = getSurvivalTicks(pl, p1, p2, isDual, 0, push, targetHorizon);
@@ -464,8 +497,10 @@ public:
         }
 
         if (bestDelay > 0) {
-            IB_LOG("[InputBuffer] SAVED +{} TICKS ({:.2f} frames @ 60fps) {}! (Frame0: {} -> Delayed: {}) [Limit: {}]",
-                bestDelay, bestDelay / 4.0f, act, ticksFrame0, bestTicks, maxDelayFrames);
+            double savedMs = bestDelay * (1000.0 / 60.0) * getValidDt();
+            IB_LOG("[InputBuffer] SAVED +{} ticks ({:.1f} ms) {}! (Frame0: {} -> Delayed: {}) [Limit: {} ticks]",
+                bestDelay, savedMs, act, ticksFrame0, bestTicks, maxDelayFrames);
+            notify(fmt::format("Saved {} +{:.1f} ms", act, savedMs));
             m_bufferedPush = push;
             m_waitTicks = bestDelay;
             return false;
@@ -479,15 +514,21 @@ public:
         PlayLayer* pl = PlayLayer::get();
         if (!pl || player != pl->m_player1) return;
 
-        // Stage comes from the mod setting
-        pollStageSetting();
+        // Settings refresh (first tick of a level + every 30 ticks)
+        if (m_pollCounter-- <= 0) {
+            m_pollCounter = 30;
+            pollSettings();
+        }
 
         // F6 cycles stages. Works globally (no console window needed), but only
         // while the game window is focused. Checked before m_enabled so it can turn back ON.
-        if ((GetAsyncKeyState(VK_F6) & 1) && isGameWindowFocused()) {
+        // Edge detection on the real key state (the old "pressed since last call" bit is
+        // shared with other code and can get eaten, which made F6 look like it did nothing).
+        bool f6Down = (GetAsyncKeyState(VK_F6) & 0x8000) != 0;
+        if (f6Down && !m_f6WasDown && isGameWindowFocused()) {
             cyclePreset();
-            m_lastStageSetting = Mod::get()->getSettingValue<std::string>("stage");
         }
+        m_f6WasDown = f6Down;
 
         if (!m_enabled) return;
 
