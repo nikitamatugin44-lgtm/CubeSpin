@@ -10,21 +10,97 @@
 	"description": "Trajectory-based 1-2 frame press and wave release input buffer.",
 	"settings": {
 		"stage": {
-			"name": "Buffer Stage",
-			"description": "How many ticks the buffer may delay an input (All modes / Wave). F6 in a level also cycles stages.",
+			"name": "Start Stage",
+			"description": "Active stage. F6 in a level cycles Stage 1 → 2 → 3 → 4 → Off.",
 			"type": "string",
-			"default": "2 / 2",
+			"default": "Stage 1",
 			"one-of": [
-				"2 / 2",
-				"4 / 4",
-				"8 / 8",
-				"16 / 8",
+				"Stage 1",
+				"Stage 2",
+				"Stage 3",
+				"Stage 4",
 				"Off"
 			]
 		},
+		"stage1-all-ms": {
+			"name": "Stage 1: max delay (ms)",
+			"description": "Longest delay the buffer may add to a click in cube/ball/ufo/etc. Rounded to the nearest physics tick (~4.2 ms at 240 TPS).",
+			"type": "float",
+			"default": 8.0,
+			"min": 0.0,
+			"max": 200.0
+		},
+		"stage1-wave-ms": {
+			"name": "Stage 1: max delay, Wave (ms)",
+			"description": "Same, but for Wave / Mini Wave.",
+			"type": "float",
+			"default": 8.0,
+			"min": 0.0,
+			"max": 100.0
+		},
+		"stage2-all-ms": {
+			"name": "Stage 2: max delay (ms)",
+			"description": "Longest delay the buffer may add to a click in cube/ball/ufo/etc. Rounded to the nearest physics tick (~4.2 ms at 240 TPS).",
+			"type": "float",
+			"default": 16.0,
+			"min": 0.0,
+			"max": 200.0
+		},
+		"stage2-wave-ms": {
+			"name": "Stage 2: max delay, Wave (ms)",
+			"description": "Same, but for Wave / Mini Wave.",
+			"type": "float",
+			"default": 16.0,
+			"min": 0.0,
+			"max": 100.0
+		},
+		"stage3-all-ms": {
+			"name": "Stage 3: max delay (ms)",
+			"description": "Longest delay the buffer may add to a click in cube/ball/ufo/etc. Rounded to the nearest physics tick (~4.2 ms at 240 TPS).",
+			"type": "float",
+			"default": 33.0,
+			"min": 0.0,
+			"max": 200.0
+		},
+		"stage3-wave-ms": {
+			"name": "Stage 3: max delay, Wave (ms)",
+			"description": "Same, but for Wave / Mini Wave.",
+			"type": "float",
+			"default": 33.0,
+			"min": 0.0,
+			"max": 100.0
+		},
+		"stage4-all-ms": {
+			"name": "Stage 4: max delay (ms)",
+			"description": "Longest delay the buffer may add to a click in cube/ball/ufo/etc. Rounded to the nearest physics tick (~4.2 ms at 240 TPS).",
+			"type": "float",
+			"default": 67.0,
+			"min": 0.0,
+			"max": 200.0
+		},
+		"stage4-wave-ms": {
+			"name": "Stage 4: max delay, Wave (ms)",
+			"description": "Same, but for Wave / Mini Wave.",
+			"type": "float",
+			"default": 33.0,
+			"min": 0.0,
+			"max": 100.0
+		},
+		"assume-release-after-takeoff": {
+			"name": "Assume tap jumps",
+			"description": "Predict cube/ball jumps as a tap (button released after takeoff) instead of held forever. Turn off if the buffer delays clicks you would hold.",
+			"type": "bool",
+			"default": true
+		},
+		"show-notifications": {
+			"name": "On-screen notifications",
+			"description": "Shows \"Saved +X ms\" when the buffer rescues a click, and the stage on F6.",
+			"type": "bool",
+			"default": true
+		},
 		"debug-log": {
 			"name": "Debug log",
-			"description": "Write buffer events to the Geode log. Keep off for best performance.",
+			"description": "Write buffer events to the Geode log.",
 			"type": "bool",
 			"default": false
 		}
