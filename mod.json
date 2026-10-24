@@ -330,6 +330,12 @@
 			"name": "Show watermark",
 			"description": "The small \"Click Before Frames | stage\" text in the bottom-left of the level. Turn off to hide it.",
 			"default": true
+		},
+		"show-complete-label": {
+			"type": "bool",
+			"name": "Show label on level complete",
+			"description": "The \"Click Before Frames was on\" text (and the saves summary) in the top-right corner of the level complete screen. Turn off to hide it.",
+			"default": true
 		}
 	},
 	"resources": {
@@ -340,4 +346,4 @@
 	"links": {
 		"source": "https://github.com/raresdalas1009/-predictive-input-buffer"
 	}
-}
+	}
