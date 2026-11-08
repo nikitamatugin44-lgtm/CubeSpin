@@ -1,4 +1,14 @@
 {
+    "geode": "4.4.0",
+    "version": "v1.0.0",
+    "id": "fullydraco.cubespin2",
+    "name": "CubeSpin",
+    "developer": "fullydraco",
+    "description": "...",
+    "gd": {
+        "android": "2.2074",
+        "win": "2.2074"
+    },
     "settings": {
         "enable-bias": {
             "type": "bool",
